@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12"><meta name="description" content="پنل اختصاصی تیم گیمینگ IRXGG برای Oxide">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon.svg">
+<link rel="stylesheet" href="/style.css"><title>IRXGG | Oxide Team</title>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">IR</span><span><b>IRXGG</b><small>OXIDE OPERATIONS</small></span></a>
+    <div class="side-label">منوی تیم</div>
+    <button class="nav active" data-page="overview">▦ <span>داشبورد</span></button>
+    <button class="nav" data-page="members">♟ <span>اعضای تیم</span></button>
+    <button class="nav" data-page="chat">◉ <span>چت تیم</span></button>
+    <button class="nav" data-page="plans">⌁ <span>عملیات و برنامه‌ها</span></button>
+    <button class="nav" data-page="relations">⚑ <span>متحدها و دشمن‌ها</span></button>
+    <button class="nav" data-page="stats">↗ <span>آمار کیل</span></button>
+    <div class="sidebar-bottom"><span class="online-dot"></span> پنل آماده عملیات <small>نسخه 1.0</small></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><button id="menuBtn" class="icon-btn" aria-label="باز کردن منو">☰</button><div><div class="eyebrow">OXIDE • TEAM COMMAND</div><h1 id="pageTitle">داشبورد تیم</h1></div><div class="top-actions"><span class="status-pill"><i></i> سیستم فعال</span><button id="accountBtn" class="account"><span class="avatar" id="avatar">I</span><span id="accountName">ورود به حساب</span></button></div></header>
+    <section id="authNotice" class="auth-notice"><div><b>به مقر IRXGG خوش آمدی</b><p>برای دیدن اطلاعات تیم، وارد شو یا اولین حساب را بساز. اولین حساب به‌صورت خودکار لیدر می‌شود.</p></div><button class="btn primary" id="openAuth">ورود / عضویت</button></section>
+    <section id="page-overview" class="page">
+      <div class="hero"><div class="hero-copy"><span class="eyebrow red">IRXGG • OXIDE DIVISION</span><h2>کنترل میدان،<br><em>پیروزی با هماهنگی.</em></h2><p>مرکز فرماندهی تیم برای مدیریت اعضا، برنامه‌ریزی حمله و دفاع و ثبت عملکرد.</p><button class="btn primary" data-go="plans">برنامه‌ریزی عملیات <b>←</b></button></div><div class="hero-emblem"><div class="ring ring1"></div><div class="ring ring2"></div><div class="emblem-text">IR<span>X</span><small>GAMING UNIT</small></div></div><div class="hero-grid"></div></div>
+      <div class="section-heading"><div><span class="eyebrow">LIVE INTEL</span><h2>وضعیت تیم</h2></div><span class="muted" id="lastUpdated">آمار پس از ورود نمایش داده می‌شود</span></div>
+      <div class="stats-grid">
+        <article class="metric"><div class="metric-top"><span>اعضای تیم</span><span class="metric-icon">♟</span></div><strong id="memberCount">—</strong><small>حساب‌های ثبت‌شده</small></article>
+        <article class="metric"><div class="metric-top"><span>کیل ثبت‌شده</span><span class="metric-icon">⌁</span></div><strong id="killCount">—</strong><small>مجموع آمار ثبت‌شده</small></article>
+        <article class="metric"><div class="metric-top"><span>عملیات آینده</span><span class="metric-icon">◷</span></div><strong id="planCount">—</strong><small>حمله، دفاع و تمرین</small></article>
+        <article class="metric"><div class="metric-top"><span>روابط ثبت‌شده</span><span class="metric-icon">⚑</span></div><strong id="relationCount">—</strong><small>متحد و دشمن</small></article>
+      </div>
+      <div class="two-col"><article class="panel"><div class="panel-heading"><div><span class="eyebrow">MISSION CONTROL</span><h3>عملیات پیش رو</h3></div><button class="text-btn" data-go="plans">مشاهده همه ←</button></div><div id="overviewPlans" class="empty">برای مشاهده برنامه‌ها وارد حساب شو.</div></article>
+      <article class="panel"><div class="panel-heading"><div><span class="eyebrow">TEAM FEED</span><h3>فعالیت‌های اخیر</h3></div></div><div id="activityList" class="empty">فعالیت‌ها بعد از ورود نمایش داده می‌شوند.</div></article></div>
+    </section>
+    <section id="page-members" class="page hidden"><div class="section-heading"><div><span class="eyebrow">SQUAD ROSTER</span><h2>اعضای تیم</h2></div><span class="muted">مدیریت اعضا و نقش‌ها</span></div><div id="membersList" class="panel empty">برای مشاهده اعضا وارد حساب شو.</div></section>
+    <section id="page-chat" class="page hidden"><div class="section-heading"><div><span class="eyebrow">SECURE TEAM CHANNEL</span><h2>چت تیم</h2></div><span class="status-pill"><i></i> کانال داخلی</span></div><div class="panel chat-panel"><div id="messages" class="messages"><div class="empty">برای استفاده از چت وارد حساب شو.</div></div><form id="chatForm" class="chat-form"><input id="chatInput" maxlength="1000" placeholder="پیام خود را بنویس..." autocomplete="off"><button class="btn primary" type="submit">ارسال ↑</button></form><small class="muted">پیام‌ها در سرور ذخیره می‌شوند؛ این نسخه چت زنده ندارد و با تازه‌سازی/بارگذاری دوباره به‌روز می‌شود.</small></div></section>
+    <section id="page-plans" class="page hidden"><div class="section-heading"><div><span class="eyebrow">TACTICAL PLANNING</span><h2>عملیات و برنامه‌ها</h2></div></div><div class="two-col"><form id="planForm" class="panel form-panel"><h3>ثبت عملیات جدید</h3><label>عنوان عملیات<input name="title" required maxlength="100" placeholder="مثلاً دفاع از بیس اصلی"></label><label>نوع عملیات<select name="kind"><option value="attack">حمله</option><option value="defense">دفاع</option><option value="training">تمرین</option></select></label><label>تاریخ و ساعت<input name="when" type="datetime-local" required></label><label>جزئیات و تقسیم وظایف<textarea name="notes" rows="4" maxlength="1000" placeholder="نقش‌ها، تجهیزات و مسیر ورود..."></textarea></label><button class="btn primary" type="submit">ذخیره برنامه</button></form><div class="panel"><div class="panel-heading"><h3>تقویم عملیات</h3></div><div id="plansList" class="list-stack empty">برای مشاهده برنامه‌ها وارد حساب شو.</div></div></div></section>
+    <section id="page-relations" class="page hidden"><div class="section-heading"><div><span class="eyebrow">DIPLOMACY & THREATS</span><h2>متحدها و دشمن‌ها</h2></div></div><div class="two-col"><form id="relationForm" class="panel form-panel"><h3>ثبت رابطه جدید</h3><label>نام بازیکن / گروه<input name="name" required maxlength="60" placeholder="نام گروه یا بازیکن"></label><label>نوع رابطه<select name="kind"><option value="ally">متحد</option><option value="enemy">دشمن</option></select></label><label>یادداشت<textarea name="notes" rows="3" maxlength="500" placeholder="توضیحات اختیاری"></textarea></label><button class="btn primary" type="submit">ثبت رابطه</button></form><div class="panel"><div class="panel-heading"><h3>فهرست روابط</h3></div><div id="relationsList" class="list-stack empty">برای مشاهده روابط وارد حساب شو.</div></div></div></section>
+    <section id="page-stats" class="page hidden"><div class="section-heading"><div><span class="eyebrow">COMBAT RECORD</span><h2>آمار کیل</h2></div></div><div class="two-col"><form id="statsForm" class="panel form-panel"><h3>ثبت عملکرد بازیکن</h3><label>نام بازیکن<input name="player" required maxlength="60" placeholder="نام بازیکن"></label><div class="input-row"><label>Kills<input name="kills" type="number" min="0" max="100000" value="0" required></label><label>Deaths<input name="deaths" type="number" min="0" max="100000" value="0"></label><label>Assists<input name="assists" type="number" min="0" max="100000" value="0"></label></div><button class="btn primary" type="submit">ثبت آمار</button></form><div class="panel"><div class="panel-heading"><h3>گزارش‌های ثبت‌شده</h3></div><div id="statsList" class="list-stack empty">برای مشاهده آمار وارد حساب شو.</div></div></div></section>
+    <footer>IRXGG GAMING • OXIDE DIVISION <span>ساخته‌شده برای هماهنگی بهتر تیم</span></footer>
+  </main>
+</div>
+<div id="authModal" class="modal hidden"><div class="modal-card"><button class="modal-close" id="closeAuth">×</button><span class="eyebrow red">TEAM ACCESS</span><h2 id="authTitle">ورود به مقر</h2><p class="muted">برای اولین ورود، حساب لیدر را بساز.</p><div class="auth-tabs"><button class="active" data-auth="login">ورود</button><button data-auth="register">ساخت حساب</button></div><form id="authForm"><label>نام کاربری<input name="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" autocomplete="username" placeholder="مثلاً IRX_leader"></label><label>رمز عبور<input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="حداقل ۸ کاراکتر"></label><p class="form-error" id="authError"></p><button class="btn primary full" type="submit">ادامه</button></form><small class="muted">اولین حساب ساخته‌شده نقش لیدر می‌گیرد. رمز عبور را امن نگه دار.</small></div></div>
+<div id="toast" class="toast"></div>
+<script src="/app.js" defer></script>
+</body></html>

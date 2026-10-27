@@ -1,0 +1,11 @@
+{
+  "name": "IRXGG Oxide Team",
+  "short_name": "IRXGG",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0c11",
+  "theme_color": "#0b0d12",
+  "description": "پنل اختصاصی تیم گیمینگ IRXGG"
+}

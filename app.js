@@ -1,0 +1,45 @@
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+let token = localStorage.getItem('irxgg_token') || '';
+let me = null, dashboard = null, authMode = 'login', activePage = 'overview', toastTimer;
+const titles={overview:'داشبورد تیم',members:'اعضای تیم',chat:'چت تیم',plans:'عملیات و برنامه‌ها',relations:'متحدها و دشمن‌ها',stats:'آمار کیل'};
+const labels={attack:'حمله',defense:'دفاع',training:'تمرین',ally:'متحد',enemy:'دشمن'};
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmt(d){if(!d)return 'زمان نامشخص';const x=new Date(d);return Number.isNaN(+x)?esc(d):x.toLocaleString('fa-IR',{dateStyle:'medium',timeStyle:'short'});}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
+async function request(url,opts={}){const headers={'Content-Type':'application/json',...(opts.headers||{})};if(token)headers.Authorization='Bearer '+token;const r=await fetch(url,{...opts,headers});let data={};try{data=await r.json()}catch{}if(!r.ok){if(r.status===401&&token){token='';me=null;localStorage.removeItem('irxgg_token');updateAccount();}throw new Error(data.error||'request_failed')}return data;}
+function openAuth(mode='login'){$('#authModal').classList.remove('hidden');setAuthMode(mode);}
+function closeAuth(){$('#authModal').classList.add('hidden');}
+function setAuthMode(m){authMode=m;$$('[data-auth]').forEach(b=>b.classList.toggle('active',b.dataset.auth===m));$('#authTitle').textContent=m==='login'?'ورود به مقر':'ساخت حساب جدید';$('#authError').textContent='';const p=$('#authForm [name=password]');p.autocomplete=m==='login'?'current-password':'new-password';}
+function updateAccount(){const name=me?.username||'ورود به حساب';$('#accountName').textContent=name;$('#avatar').textContent=me?name.slice(0,1).toUpperCase():'I';$('#authNotice').classList.toggle('hidden',!!me);}
+function go(page){if(!titles[page])return;activePage=page;$$('.page').forEach(p=>p.classList.add('hidden'));$('#page-'+page).classList.remove('hidden');$$('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('#pageTitle').textContent=titles[page];$('.sidebar').classList.remove('open');}
+function planHTML(p){return `<div class="list-item"><div><b>${esc(p.title)}</b><small>${fmt(p.when)} • ثبت توسط ${esc(p.createdBy||'')}</small>${p.notes?`<p>${esc(p.notes)}</p>`:''}</div><span class="tag ${esc(p.kind)}">${labels[p.kind]||'برنامه'}</span></div>`;}
+function render(){
+ if(!dashboard)return;
+ const d=dashboard;$('#memberCount').textContent=d.users.length;$('#killCount').textContent=d.stats.reduce((a,s)=>a+(Number(s.kills)||0),0).toLocaleString('fa-IR');$('#planCount').textContent=d.plans.filter(p=>new Date(p.when)>new Date()).length;$('#relationCount').textContent=d.relations.length;$('#lastUpdated').textContent='آخرین بارگذاری: '+new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
+ $('#overviewPlans').className='list-stack';$('#overviewPlans').innerHTML=d.plans.length?d.plans.slice(0,3).map(planHTML).join(''):'<div class="empty">هنوز برنامه‌ای ثبت نشده است.</div>';
+ $('#activityList').className='';$('#activityList').innerHTML=d.activities.length?d.activities.map(a=>`<div class="activity"><span class="activity-dot"></span><div><b>${esc(a.text)}</b><small>${fmt(a.at)}</small></div></div>`).join(''):'<div class="empty">فعالیت تازه‌ای وجود ندارد.</div>';
+ $('#membersList').className='panel';$('#membersList').innerHTML=d.users.map(u=>`<div class="member-row"><span class="avatar">${esc(u.username.slice(0,1).toUpperCase())}</span><div class="member-info"><b>${esc(u.username)}</b><small>عضو از ${fmt(u.joinedAt)}</small></div><span class="tag">${u.role==='leader'?'لیدر':'عضو'}</span>${me?.role==='leader'&&u.id!==me.id?`<button class="role-btn" data-role-id="${esc(u.id)}" data-role="${u.role==='leader'?'member':'leader'}">${u.role==='leader'?'تبدیل به عضو':'ارتقا به لیدر'}</button>`:''}</div>`).join('')||'<div class="empty">عضوی ثبت نشده است.</div>';
+ $('#messages').innerHTML=d.messages.length?d.messages.map(m=>`<div class="message ${m.userId===me?.id?'mine':''}"><div class="message-head"><b>${esc(m.username)}</b><small>${fmt(m.at)}</small></div><p>${esc(m.text)}</p></div>`).join(''):'<div class="empty">اولین پیام تیم را بفرست.</div>';
+ $('#messages').scrollTop=$('#messages').scrollHeight;
+ $('#plansList').className='list-stack';$('#plansList').innerHTML=d.plans.length?d.plans.map(planHTML).join(''):'<div class="empty">برنامه‌ای ثبت نشده است.</div>';
+ $('#relationsList').className='list-stack';$('#relationsList').innerHTML=d.relations.length?d.relations.map(r=>`<div class="list-item"><div><b>${esc(r.name)}</b><small>ثبت توسط ${esc(r.createdBy||'')} • ${fmt(r.at)}</small>${r.notes?`<p>${esc(r.notes)}</p>`:''}</div><span class="tag ${r.kind}">${labels[r.kind]||'رابطه'}</span></div>`).join(''):'<div class="empty">هنوز رابطه‌ای ثبت نشده است.</div>';
+ $('#statsList').className='list-stack';$('#statsList').innerHTML=d.stats.length?d.stats.map(s=>`<div class="list-item"><div><b>${esc(s.player)}</b><small>${fmt(s.at)} • ثبت توسط ${esc(s.createdBy||'')}</small><p>Kills: ${s.kills}　 Deaths: ${s.deaths}　 Assists: ${s.assists}</p></div><span class="tag training">K/D ${s.deaths? (s.kills/s.deaths).toFixed(2):s.kills.toFixed(2)}</span></div>`).join(''):'<div class="empty">آماری ثبت نشده است.</div>';
+}
+async function refresh(){if(!token){dashboard=null;updateAccount();return;}try{const d=await request('/api/dashboard');dashboard=d;me=d.user;updateAccount();render();}catch(e){if(e.message==='login_required'){dashboard=null;updateAccount();}else toast('بارگذاری اطلاعات انجام نشد');}}
+async function submitForm(form,url,success){if(!token){openAuth();return;}const fd=new FormData(form), obj=Object.fromEntries(fd.entries());try{await request(url,{method:'POST',body:JSON.stringify(obj)});form.reset();toast(success);await refresh();}catch(e){toast(friendlyError(e.message));}}
+function friendlyError(s){return ({login_required:'ابتدا وارد حساب شو.',invalid_credentials:'نام کاربری یا رمز عبور اشتباه است.',username_taken:'این نام کاربری قبلاً ثبت شده است.',username_3_24_and_password_8_required:'نام کاربری ۳ تا ۲۴ حرف و رمز حداقل ۸ کاراکتر باشد.',leader_only:'این عملیات فقط برای لیدر مجاز است.',cannot_change_own_role:'نقش حساب خودت را نمی‌توانی تغییر دهی.'})[s]||'خطا: '+s;}
+$$('.nav').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+$('#menuBtn').addEventListener('click',()=>$('.sidebar').classList.toggle('open'));
+$('#accountBtn').addEventListener('click',()=>me? (confirm('از حساب خارج می‌شوی؟')&&request('/api/logout',{method:'POST'}).then(()=>{token='';me=null;dashboard=null;localStorage.removeItem('irxgg_token');updateAccount();toast('از حساب خارج شدی');refresh();}).catch(()=>toast('خروج انجام نشد'))):openAuth());
+$('#openAuth').addEventListener('click',()=>openAuth());$('#closeAuth').addEventListener('click',closeAuth);$('#authModal').addEventListener('click',e=>{if(e.target.id==='authModal')closeAuth()});
+$$('[data-auth]').forEach(b=>b.addEventListener('click',()=>setAuthMode(b.dataset.auth)));
+$('#authForm').addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(e.currentTarget);$('#authError').textContent='';try{const d=await request('/api/'+(authMode==='login'?'login':'register'),{method:'POST',headers:{},body:JSON.stringify(Object.fromEntries(fd.entries()))});token=d.token;me=d.user;localStorage.setItem('irxgg_token',token);closeAuth();updateAccount();toast(authMode==='login'?'ورود موفق بود':'حساب ساخته شد');await refresh();}catch(err){$('#authError').textContent=friendlyError(err.message);}});
+$('#chatForm').addEventListener('submit',async e=>{e.preventDefault();const input=$('#chatInput'),text=input.value.trim();if(!text)return;if(!token)return openAuth();try{await request('/api/messages',{method:'POST',body:JSON.stringify({text})});input.value='';await refresh();}catch(err){toast(friendlyError(err.message));}});
+$('#planForm').addEventListener('submit',e=>{e.preventDefault();submitForm(e.currentTarget,'/api/plans','برنامه ثبت شد.')});
+$('#relationForm').addEventListener('submit',e=>{e.preventDefault();submitForm(e.currentTarget,'/api/relations','رابطه ثبت شد.')});
+$('#statsForm').addEventListener('submit',e=>{e.preventDefault();submitForm(e.currentTarget,'/api/stats','آمار ثبت شد.')});
+$('#membersList').addEventListener('click',async e=>{const b=e.target.closest('[data-role-id]');if(!b)return;try{await request('/api/members/role',{method:'POST',body:JSON.stringify({userId:b.dataset.roleId,role:b.dataset.role})});toast('نقش عضو به‌روزرسانی شد');await refresh();}catch(err){toast(friendlyError(err.message));}});
+window.addEventListener('online',()=>refresh());
+updateAccount();refresh();
